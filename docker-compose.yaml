@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    container_name: keycloak
+    environment: 
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_ADDR=db
+      - DB_VENDOR=postgres
+      - DB_DATABASE=keycloak
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=root
+    volumes:
+      - ./meutema:/opt/jboss/keycloak/themes/meutema
+    ports: 
+      - 8085:8080
+    depends_on: 
+      - db
+  
+  db:
+    build: .docker/postgres
+    container_name: keycloak_postgres
+    restart: always
+    tty: true
+    ports:
+      - 15432:5432
+    volumes:
+      - ./.docker/dbdata:/var/lib/postgres/data
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=keycloak
